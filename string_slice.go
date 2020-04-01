@@ -106,8 +106,8 @@ func (f *FlagSet) StringSliceVar(p *[]string, name string, defaultValue []string
 }
 
 // StringSliceVarP is like StringSliceVar, but accepts a shorthand letter that can be used after a single dash.
-func (f *FlagSet) StringSliceVarP(p *[]string, name, shorthand string, value []string, usage string) {
-	f.VarP(newStringSliceValue(value, p), name, shorthand, usage)
+func (f *FlagSet) StringSliceVarP(p *[]string, name, shorthand string, defaultValue []string, usage string) {
+	f.VarP(newStringSliceValue(defaultValue, p), name, shorthand, usage)
 }
 
 // StringSliceVar defines a string flag with specified name, default value, and usage string.
