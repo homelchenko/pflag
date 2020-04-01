@@ -101,8 +101,8 @@ func (f *FlagSet) GetStringSlice(name string) ([]string, error) {
 //   --ss="v1,v2" --ss="v3"
 // will result in
 //   []string{"v1", "v2", "v3"}
-func (f *FlagSet) StringSliceVar(p *[]string, name string, value []string, usage string) {
-	f.VarP(newStringSliceValue(value, p), name, "", usage)
+func (f *FlagSet) StringSliceVar(p *[]string, name string, defaultValue []string, usage string) {
+	f.VarP(newStringSliceValue(defaultValue, p), name, "", usage)
 }
 
 // StringSliceVarP is like StringSliceVar, but accepts a shorthand letter that can be used after a single dash.
