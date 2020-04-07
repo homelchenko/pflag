@@ -8,26 +8,26 @@ import (
 )
 
 func setUpBSFlagSet(bsp *[]bool) *FlagSet {
-	f := NewFlagSet("test", ContinueOnError)
-	f.BoolSliceVar(bsp, "bs", []bool{}, "Command separated list!")
-	return f
+	fs := NewFlagSet("test", ContinueOnError)
+	fs.BoolSliceVar(bsp, "bs", []bool{}, "Command separated list!")
+	return fs
 }
 
 func setUpBSFlagSetWithDefault(bsp *[]bool) *FlagSet {
-	f := NewFlagSet("test", ContinueOnError)
-	f.BoolSliceVar(bsp, "bs", []bool{false, true}, "Command separated list!")
-	return f
+	fs := NewFlagSet("test", ContinueOnError)
+	fs.BoolSliceVar(bsp, "bs", []bool{false, true}, "Command separated list!")
+	return fs
 }
 
 func TestEmptyBS(t *testing.T) {
 	var bs []bool
-	f := setUpBSFlagSet(&bs)
-	err := f.Parse([]string{})
+	fs := setUpBSFlagSet(&bs)
+	err := fs.Parse([]string{})
 	if err != nil {
 		t.Fatal("expected no error; got", err)
 	}
 
-	getBS, err := f.GetBoolSlice("bs")
+	getBS, err := fs.GetBoolSlice("bs")
 	if err != nil {
 		t.Fatal("got an error from GetBoolSlice():", err)
 	}
@@ -38,11 +38,11 @@ func TestEmptyBS(t *testing.T) {
 
 func TestBS(t *testing.T) {
 	var bs []bool
-	f := setUpBSFlagSet(&bs)
+	fs := setUpBSFlagSet(&bs)
 
 	vals := []string{"1", "F", "TRUE", "0"}
 	arg := fmt.Sprintf("--bs=%s", strings.Join(vals, ","))
-	err := f.Parse([]string{arg})
+	err := fs.Parse([]string{arg})
 	if err != nil {
 		t.Fatal("expected no error; got", err)
 	}
@@ -55,7 +55,7 @@ func TestBS(t *testing.T) {
 			t.Fatalf("expected is[%d] to be %s but got: %t", i, vals[i], v)
 		}
 	}
-	getBS, err := f.GetBoolSlice("bs")
+	getBS, err := fs.GetBoolSlice("bs")
 	if err != nil {
 		t.Fatalf("got error: %v", err)
 	}
@@ -72,11 +72,11 @@ func TestBS(t *testing.T) {
 
 func TestBSDefault(t *testing.T) {
 	var bs []bool
-	f := setUpBSFlagSetWithDefault(&bs)
+	fs := setUpBSFlagSetWithDefault(&bs)
 
 	vals := []string{"false", "T"}
 
-	err := f.Parse([]string{})
+	err := fs.Parse([]string{})
 	if err != nil {
 		t.Fatal("expected no error; got", err)
 	}
@@ -90,7 +90,7 @@ func TestBSDefault(t *testing.T) {
 		}
 	}
 
-	getBS, err := f.GetBoolSlice("bs")
+	getBS, err := fs.GetBoolSlice("bs")
 	if err != nil {
 		t.Fatal("got an error from GetBoolSlice():", err)
 	}
@@ -107,11 +107,11 @@ func TestBSDefault(t *testing.T) {
 
 func TestBSWithDefault(t *testing.T) {
 	var bs []bool
-	f := setUpBSFlagSetWithDefault(&bs)
+	fs := setUpBSFlagSetWithDefault(&bs)
 
 	vals := []string{"FALSE", "1"}
 	arg := fmt.Sprintf("--bs=%s", strings.Join(vals, ","))
-	err := f.Parse([]string{arg})
+	err := fs.Parse([]string{arg})
 	if err != nil {
 		t.Fatal("expected no error; got", err)
 	}
@@ -125,7 +125,7 @@ func TestBSWithDefault(t *testing.T) {
 		}
 	}
 
-	getBS, err := f.GetBoolSlice("bs")
+	getBS, err := fs.GetBoolSlice("bs")
 	if err != nil {
 		t.Fatal("got an error from GetBoolSlice():", err)
 	}
@@ -142,14 +142,14 @@ func TestBSWithDefault(t *testing.T) {
 
 func TestBSCalledTwice(t *testing.T) {
 	var bs []bool
-	f := setUpBSFlagSet(&bs)
+	fs := setUpBSFlagSet(&bs)
 
 	in := []string{"T,F", "T"}
 	expected := []bool{true, false, true}
 	argfmt := "--bs=%s"
 	arg1 := fmt.Sprintf(argfmt, in[0])
 	arg2 := fmt.Sprintf(argfmt, in[1])
-	err := f.Parse([]string{arg1, arg2})
+	err := fs.Parse([]string{arg1, arg2})
 	if err != nil {
 		t.Fatal("expected no error; got", err)
 	}
@@ -162,18 +162,18 @@ func TestBSCalledTwice(t *testing.T) {
 
 func TestBSAsSliceValue(t *testing.T) {
 	var bs []bool
-	f := setUpBSFlagSet(&bs)
+	fs := setUpBSFlagSet(&bs)
 
 	in := []string{"true", "false"}
 	argfmt := "--bs=%s"
 	arg1 := fmt.Sprintf(argfmt, in[0])
 	arg2 := fmt.Sprintf(argfmt, in[1])
-	err := f.Parse([]string{arg1, arg2})
+	err := fs.Parse([]string{arg1, arg2})
 	if err != nil {
 		t.Fatal("expected no error; got", err)
 	}
 
-	f.VisitAll(func(f *Flag) {
+	fs.VisitAll(func(f *Flag) {
 		if val, ok := f.Value.(SliceValue); ok {
 			_ = val.Replace([]string{"false"})
 		}
